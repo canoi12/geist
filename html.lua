@@ -3,9 +3,8 @@ local html = {}
 local out = ""
 local function encode_text(content)
     local str = ""
-    for i,c in ipairs(content) do
+    for _,c in ipairs(content) do
         if c.type == 'text' then
-            print('text', c.value)
             str = str .. c.value
         elseif c.type == 'bold' then
             str = str .. '<b>' .. c.value .. '</b>'
@@ -22,14 +21,14 @@ end
 
 function html.encode(content)
     out = ""
-    for i,block in ipairs(content) do
+    for _,block in ipairs(content) do
         if block.type == 'multi code' then
             out = out .. '<pre><code'
             if block.lang then
                 out = out .. ' class="' .. block.lang .. '"'
             end
             out = out .. '>\n'
-            for j,c in ipairs(block.value) do
+            for _,c in ipairs(block.value) do
                 out = out .. c .. '\n'
             end
             out = out .. '</code></pre>\n'
@@ -38,7 +37,7 @@ function html.encode(content)
         elseif block.type == 'list' then
             out = out .. '<ul>\n'
             for j,v in ipairs(block.value) do
-                print(j, v.type)
+                -- print(j, v.type)
                 out = out .. '<li>' .. encode_text(v) .. '</li>\n'
             end
             out = out .. '</ul>\n'
