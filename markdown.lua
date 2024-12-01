@@ -49,9 +49,9 @@ local function process_string(md)
             local v = {create_block(str, c, 'code', s, e)}
             table.insert(content, v[1])
             e = v[2]+1
-        elseif c == '**' or c == '__' then
+        elseif str:sub(s, s+1) == '**' or str:sub(s, s+1) == '__' then
             print('b', str:sub(s, e))
-            local v = {create_block(str, c, 'bold', s, e)}
+            local v = {create_block(str, str:sub(s, s+1), 'bold', s, e)}
             table.insert(content, v[1])
             print(v[1], v[2])
             e = v[2]+2
