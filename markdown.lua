@@ -14,21 +14,6 @@ local function begin_meta(file)
     return meta
 end
 
---- @return string, integer
-local function write_tag(line, symbol, tagname, s, e)
-    local symlen = symbol:len()
-    local str = '<' .. tagname .. '>'
-    local find = string.find(line, symbol, s+symlen, true)
-    local ss = 0
-    ss = line:find(symbol, s+symlen, true)
-    str = str .. line:sub(s+symlen, ss-1)
-    str = str .. '</' .. tagname .. '>'
-    if string.sub(line, ss+symlen, ss+symlen) == ' ' then
-        str = str .. ' '
-    end
-    return str, ss
-end
-
 local function create_block(line, symbol, blocktype, s, e)
     local symlen = symbol:len()
     local block = {}
@@ -37,6 +22,14 @@ local function create_block(line, symbol, blocktype, s, e)
     block.value = line:sub(s+symlen, ss-1)
     return block, ss
 end
+
+local symbols = {
+    ['`'] = 'code',
+    ['**'] = 'bold',
+    ['__'] = 'bold',
+    ['*'] = 'italic',
+    ['_'] = 'italic'
+}
 
 local function process_string(md)
     if md.line == "" then return end
@@ -51,26 +44,23 @@ local function process_string(md)
             table.insert(content, block)
             s = s + 1
         end
-        if str:sub(s, s) == '`' then
-            local v = {create_block(str, '`', 'code', s, e)}
+        local c = str:sub(s, s)
+        if c == '`' then
+            local v = {create_block(str, c, 'code', s, e)}
             table.insert(content, v[1])
             e = v[2]+1
-        elseif str:sub(s, s+1) == '**' then
+        elseif c == '**' or c == '__' then
             print('b', str:sub(s, e))
-            local v = {create_block(str, '**', 'bold', s, e)}
+            local v = {create_block(str, c, 'bold', s, e)}
             table.insert(content, v[1])
             print(v[1], v[2])
             e = v[2]+2
-        elseif str:sub(s, s+1) == '__' then
-            local v = {create_block(str, '__', 'bold', s, e)}
-            table.insert(content, v[1])
-            e = v[2]+2
-        elseif str:sub(s, s) == '*' then
+        elseif c == '*' or c == '_' then
             print('i', str:sub(s, e))
-            local v = {create_block(str, '*', 'italic', s, e)}
+            local v = {create_block(str, c, 'italic', s, e)}
             table.insert(content, v[1])
             e = v[2]+1
-        elseif str:sub(s, s) == '[' then
+        elseif c == '[' then
             local name = str:match('[^%]]+', s+1)
             local link = str:match('[^%)]+', s+3+name:len())
             local block = {}

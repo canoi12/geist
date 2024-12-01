@@ -36,11 +36,11 @@ function html.encode(content)
             out = out .. '<br/>\n'
         elseif block.type == 'list' then
             out = out .. '<ul>\n'
-            for j,v in ipairs(block.value) do
+            for _,v in ipairs(block.value) do
                 -- print(j, v.type)
                 out = out .. '<li>' .. encode_text(v) .. '</li>\n'
             end
-            out = out .. '</ul>\n'
+            out = out .. '</ul>'
         elseif block.type == 'image' then
             out = out .. '<img alt="' .. block.alt .. '" src="' .. block.src .. '"/>'
         elseif block.type == 'paragraph' then
